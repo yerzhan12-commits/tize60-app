@@ -1,0 +1,1481 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="description" content="ТІЗЕ 60+ — 4-недельная щадящая программа укрепления коленных суставов для людей старше 60 лет">
+<meta name="theme-color" content="#0e0e10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ТІЗЕ 60+">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>ТІЗЕ 60+ — программа для колена</title>
+<style>
+  :root{
+    --bg:#0e0e10;
+    --bg2:#161618;
+    --card:#1c1c1f;
+    --card2:#232326;
+    --accent:#E05C1A;
+    --accent-dim:#7a3410;
+    --text:#f2f0ee;
+    --muted:#9b9894;
+    --line:#2c2c2f;
+    --good:#3ba55d;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--bg);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .screen{display:none; flex:1; flex-direction:column; padding-bottom:76px;}
+  .screen.active{display:flex;}
+
+  /* ---------- Welcome ---------- */
+  #screen-welcome{padding:32px 24px; justify-content:center; align-items:center; text-align:center; min-height:100vh;}
+  #screen-welcome .logo{
+    font-size:40px; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:6px;
+  }
+  #screen-welcome .logo-sub{color:var(--muted); font-size:13px; margin-bottom:28px;}
+  #screen-welcome p{line-height:1.6; font-size:15px; color:#d8d5d1; text-align:left; white-space:pre-line;}
+  #screen-welcome .phases{margin:20px 0; text-align:left; width:100%;}
+  #screen-welcome .phase-row{
+    display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); align-items:baseline;
+  }
+  #screen-welcome .phase-row:last-child{border-bottom:none;}
+  #screen-welcome .phase-num{color:var(--accent); font-weight:700; font-size:13px; min-width:64px;}
+  #screen-welcome .phase-txt{font-size:13.5px; color:#cfccc8;}
+  #screen-welcome .warn-box{
+    margin-top:18px; padding:14px; background:linear-gradient(135deg,#2a1a10,#201212);
+    border:1px solid var(--accent-dim); border-radius:12px; font-size:12.5px; line-height:1.55; color:#f0d9c9; text-align:left;
+  }
+  #start-btn{
+    margin-top:24px; width:100%; padding:16px; font-size:16px; font-weight:700;
+    background:var(--accent); color:#fff; border:none; border-radius:14px; cursor:pointer;
+  }
+  #start-btn:active{opacity:.85;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:5;
+    background:rgba(14,14,16,.92); backdrop-filter:blur(6px);
+    padding:16px 18px 12px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .topbar .back-btn, .topbar .help-btn{
+    background:none; border:none; color:var(--accent); font-size:20px; cursor:pointer; padding:0 4px 0 0;
+  }
+  .topbar h1{font-size:17px; margin:0; font-weight:700; flex:1;}
+  .topbar .sub{font-size:12px; color:var(--muted);}
+
+  /* ---------- Reminder banner ---------- */
+  .reminder-banner{
+    margin:12px 18px 0; padding:12px 14px; background:linear-gradient(135deg,#2a1a10,#1c1c1f);
+    border:1px solid var(--accent-dim); border-radius:12px; font-size:13px; color:#f0d9c9;
+    display:flex; align-items:center; gap:10px;
+  }
+  .reminder-banner span{flex:1; line-height:1.4;}
+  .reminder-banner button{
+    background:none; border:none; color:var(--muted); font-size:15px; cursor:pointer; padding:2px 4px;
+  }
+
+  /* ---------- Today card + plan toggle ---------- */
+  .today-card{
+    margin:14px 18px 0; padding:16px; background:linear-gradient(135deg,#2a1a10,#1c1c1f);
+    border:1px solid var(--accent-dim); border-radius:14px;
+  }
+  .today-card .label{font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.4px; margin-bottom:5px;}
+  .today-card .title{font-size:17px; font-weight:800; margin-bottom:4px;}
+  .today-card .sub{font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.4;}
+  .today-card button{
+    width:100%; padding:13px; background:var(--accent); color:#fff; border:none;
+    border-radius:10px; font-size:14.5px; font-weight:700; cursor:pointer;
+  }
+  .plan-toggle{
+    margin:12px 18px 0; width:calc(100% - 36px); background:none; border:1px solid var(--line);
+    color:var(--muted); border-radius:10px; padding:10px; font-size:12.5px; cursor:pointer;
+  }
+
+  /* ---------- Program screen: week tabs + day grid ---------- */
+  .week-tabs{display:flex; gap:8px; padding:14px 18px 4px; flex-wrap:wrap;}
+  .week-tab{
+    flex:1; min-width:70px; padding:10px 0; text-align:center; border-radius:10px; font-size:13px; font-weight:600;
+    background:var(--card); color:var(--muted); cursor:pointer; border:1px solid var(--line);
+  }
+  .week-tab.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+  .day-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:16px 18px 10px;
+  }
+  .day-cell{
+    aspect-ratio:1; background:var(--card); border:1px solid var(--line); border-radius:12px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative;
+  }
+  .day-cell .n{font-size:16px; font-weight:700;}
+  .day-cell .t{font-size:9px; color:var(--muted); margin-top:2px; text-align:center; padding:0 3px; line-height:1.2;}
+  .day-cell.rest{border-style:dashed;}
+  .day-cell.done{background:var(--good); border-color:var(--good);}
+  .day-cell.done .n{color:#fff;}
+  .day-cell.done .t{color:rgba(255,255,255,.85);}
+  .day-cell.done::after{
+    content:"✓"; position:absolute; top:4px; right:6px; color:#fff; font-size:11px; font-weight:800;
+  }
+  .day-cell.current{box-shadow:0 0 0 2px var(--accent) inset;}
+
+  .week-label{padding:6px 18px 2px; font-size:12px; color:var(--muted); letter-spacing:.5px;}
+
+  /* ---------- Day detail ---------- */
+  .day-nav{
+    display:flex; align-items:center; justify-content:space-between; padding:14px 18px 6px;
+  }
+  .day-nav button{
+    background:var(--card); border:1px solid var(--line); color:var(--text);
+    border-radius:10px; padding:8px 14px; font-size:14px; cursor:pointer;
+  }
+  .day-nav button:disabled{opacity:.3;}
+  .day-nav .day-title{font-weight:700; font-size:15px; text-align:center;}
+  .day-nav .day-title small{display:block; font-weight:400; color:var(--muted); font-size:11px; margin-top:2px;}
+
+  .progress-wrap{padding:6px 18px 4px;}
+  .progress-bar-bg{height:8px; background:var(--card2); border-radius:6px; overflow:hidden;}
+  .progress-bar-fill{height:100%; background:var(--accent); width:0%; transition:width .25s;}
+  .progress-label{font-size:11px; color:var(--muted); margin-top:5px; text-align:right;}
+
+  .tip-box{
+    margin:12px 18px; padding:12px 14px; background:linear-gradient(135deg,#2a1a10,#1c1c1f);
+    border:1px solid var(--accent-dim); border-radius:12px; font-size:13px; line-height:1.5; color:#f0d9c9;
+  }
+
+  .rest-card{
+    margin:4px 18px 20px; padding:20px; background:var(--card); border:1px dashed var(--line);
+    border-radius:12px; text-align:center;
+  }
+  .rest-card .rest-ic{font-size:32px; margin-bottom:8px;}
+  .rest-card .rest-title{font-size:15px; font-weight:700; margin-bottom:6px;}
+  .rest-card .rest-note{font-size:13px; color:var(--muted); line-height:1.5;}
+
+  .ex-list{padding:4px 18px 20px; display:flex; flex-direction:column; gap:10px;}
+  .ex-row{
+    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 12px;
+    display:flex; align-items:flex-start; gap:10px;
+  }
+  .ex-row.checked{border-color:var(--good); background:#152018;}
+  .ex-check{
+    width:24px; height:24px; border-radius:7px; border:2px solid var(--muted); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:1px; background:transparent;
+  }
+  .ex-row.checked .ex-check{background:var(--good); border-color:var(--good); color:#fff; font-size:14px; font-weight:800;}
+  .ex-body{flex:1; min-width:0;}
+  .ex-name{font-size:14.5px; font-weight:700; cursor:pointer;}
+  .ex-row.checked .ex-name{color:#b9d9c4; text-decoration:line-through; text-decoration-color:#4a7a5c;}
+  .ex-meta{font-size:12.5px; color:var(--muted); margin-top:3px; line-height:1.4;}
+  .ex-actions{display:flex; gap:8px; margin-top:8px;}
+  .ex-actions button{
+    font-size:11.5px; padding:6px 10px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card2); color:var(--text); cursor:pointer;
+  }
+  .ex-actions button.timer-btn{color:var(--accent); border-color:var(--accent-dim);}
+
+  /* ---------- Day notes ---------- */
+  .notes-box{padding:4px 18px 20px;}
+  .notes-label{font-size:12px; color:var(--accent); font-weight:700; letter-spacing:.4px; margin-bottom:6px;}
+  .notes-box textarea{
+    width:100%; min-height:70px; resize:vertical; background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:12px; color:var(--text); font-size:13.5px; line-height:1.5;
+    font-family:inherit;
+  }
+  .notes-box textarea:focus{outline:none; border-color:var(--accent-dim);}
+
+  /* ---------- Stats screen ---------- */
+  .stats-wrap{padding:14px 18px 20px;}
+  .stat-row{display:flex; gap:10px; margin-bottom:10px;}
+  .stat-card{
+    flex:1; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center;
+  }
+  .stat-num{font-size:24px; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .stat-label{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.3;}
+  .stat-weeks{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin:4px 0 16px; display:flex; flex-direction:column; gap:10px;}
+  .stat-week-row{display:flex; align-items:center; gap:10px;}
+  .stat-week-label{font-size:12px; color:var(--muted); width:64px; flex-shrink:0;}
+  .stat-week-pct{font-size:12px; color:var(--text); width:36px; text-align:right; font-variant-numeric:tabular-nums;}
+  .stat-heatmap-label{font-size:12px; color:var(--muted); margin-bottom:8px;}
+
+  /* ---------- About screen ---------- */
+  .about-list{padding:12px 18px 20px; display:flex; flex-direction:column; gap:10px;}
+  .about-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px;}
+  .about-card h3{margin:0 0 8px; font-size:15px;}
+  .about-card .label{font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.4px; margin:10px 0 3px;}
+  .about-card .label:first-of-type{margin-top:2px;}
+  .about-card p{margin:0; font-size:13px; line-height:1.5; color:#cfccc8;}
+  .video-btn{
+    margin-top:12px; width:100%; padding:10px; border-radius:9px; border:1px dashed var(--accent-dim);
+    background:none; color:var(--accent); font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .video-btn:disabled{opacity:.55; cursor:default;}
+  .video-embed{
+    margin-top:12px; width:100%; aspect-ratio:16/9; border-radius:9px; overflow:hidden; background:#000;
+  }
+  .video-embed iframe{width:100%; height:100%; border:0; display:block;}
+
+  /* ---------- Protocol screen ---------- */
+  .protocol-head{padding:16px 18px 4px;}
+  .protocol-head .warn{
+    background:linear-gradient(135deg,#2a1a10,#201212); border:1px solid var(--accent-dim);
+    border-radius:14px; padding:16px; text-align:center;
+  }
+  .protocol-head .warn .big{font-size:16px; font-weight:800; color:var(--accent); margin-bottom:6px;}
+  .protocol-head .warn .small{font-size:12.5px; color:var(--muted); line-height:1.5;}
+  .protocol-list{padding:14px 18px 20px; display:flex; flex-direction:column; gap:12px;}
+  .protocol-item{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; gap:12px;}
+  .protocol-num{
+    width:34px; height:34px; border-radius:10px; background:var(--accent); color:#fff; font-weight:800;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:15px;
+  }
+  .protocol-item h4{margin:0 0 4px; font-size:14.5px;}
+  .protocol-item .dose{font-size:12px; color:var(--accent); font-weight:600; margin-bottom:4px;}
+  .protocol-item p{margin:0; font-size:12.5px; line-height:1.5; color:#cfccc8;}
+  .protocol-item .sub-list{display:flex; flex-direction:column; gap:8px; margin-top:2px;}
+  .protocol-item .sub-list .sub-title{font-size:12.5px; font-weight:700; color:var(--text);}
+  .protocol-item .sub-list p{margin-top:2px;}
+
+  /* ---------- Ritual card ---------- */
+  .ritual-card{margin:14px 18px 0; padding:16px; background:var(--card); border:1px solid var(--line); border-radius:14px;}
+  .ritual-title{font-size:15px; font-weight:800; margin-bottom:4px;}
+  .ritual-sub{font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.4;}
+  .ritual-icons{display:flex; gap:10px; margin-bottom:12px;}
+  .ritual-icon-btn{
+    flex:1; background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:12px 6px;
+    display:flex; flex-direction:column; align-items:center; gap:6px; font-size:24px; cursor:pointer; color:var(--text);
+  }
+  .ritual-icon-btn span{font-size:11px; font-weight:600;}
+  .ritual-instruction{
+    font-size:12.5px; color:#cfccc8; background:var(--bg2); border-radius:10px; padding:10px 12px;
+    margin-bottom:12px; line-height:1.4; text-align:center;
+  }
+  .ritual-checks{display:flex; flex-direction:column; gap:8px;}
+  .ritual-check-row{
+    display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--card2);
+    border-radius:10px; cursor:pointer; font-size:13px;
+  }
+  .ritual-check-row.checked{background:#152018; color:#b9d9c4;}
+  .ritual-check-box{
+    width:20px; height:20px; border-radius:6px; border:2px solid var(--muted); display:flex;
+    align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0;
+  }
+  .ritual-check-row.checked .ritual-check-box{background:var(--good); border-color:var(--good); color:#fff;}
+  .ritual-timer{
+    margin-top:14px; padding:14px; background:linear-gradient(135deg,#2a1a10,#1c1c1f);
+    border:1px solid var(--accent-dim); border-radius:12px; text-align:center;
+  }
+  .ritual-timer-label{font-size:12px; color:var(--muted); margin-bottom:4px;}
+  .ritual-timer-display{font-size:32px; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums; margin-bottom:10px;}
+  .ritual-remind-btn{background:var(--accent); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12.5px; font-weight:700; cursor:pointer;}
+  .ritual-remind-btn:disabled{opacity:.6; cursor:default;}
+  .ritual-history{margin-top:12px; font-size:11.5px; color:var(--muted); text-align:center;}
+
+  .protocol-mix{
+    margin:0 18px 12px; padding:14px; background:var(--card); border:1px solid var(--accent-dim);
+    border-radius:12px;
+  }
+  .protocol-mix h4{margin:0 0 8px; font-size:14px; color:var(--accent);}
+  .protocol-mix p{margin:0 0 8px; font-size:12.5px; line-height:1.5; color:#cfccc8;}
+  .protocol-mix p:last-child{margin-bottom:0;}
+  .protocol-mix b{color:var(--text);}
+  .protocol-disclaimer{
+    margin:0 18px 20px; padding:12px 14px; font-size:11.5px; line-height:1.5; color:var(--muted);
+    border-top:1px solid var(--line); padding-top:14px;
+  }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:480px; display:flex; background:var(--bg2);
+    border-top:1px solid var(--line); z-index:10;
+  }
+  .bottom-nav button{
+    flex:1; background:none; border:none; color:var(--muted); padding:10px 0 8px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px;
+  }
+  .bottom-nav button .ic{font-size:19px;}
+  .bottom-nav button.active{color:var(--accent);}
+
+  /* ---------- Modal (exercise info / timer) ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:50; display:none;
+    align-items:flex-end; justify-content:center;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-sheet{
+    width:100%; max-width:480px; background:var(--bg2); border-radius:20px 20px 0 0;
+    padding:18px 20px 26px; max-height:82vh; overflow-y:auto;
+  }
+  .modal-sheet .close-row{display:flex; justify-content:flex-end; margin-bottom:4px;}
+  .modal-sheet .close-row button{
+    background:var(--card); border:none; color:var(--muted); width:30px; height:30px; border-radius:50%;
+    font-size:15px; cursor:pointer;
+  }
+  .modal-sheet h3{margin:0 0 10px; font-size:17px;}
+  .modal-sheet .label{font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.4px; margin:12px 0 3px;}
+  .modal-sheet .label:first-of-type{margin-top:0;}
+  .modal-sheet p{margin:0; font-size:13.5px; line-height:1.55; color:#d5d2ce;}
+
+  /* timer modal */
+  #timer-modal .modal-sheet{text-align:center;}
+  #timer-name{font-size:14px; color:var(--muted); margin-bottom:2px;}
+  #timer-phase{font-size:15px; font-weight:700; color:var(--accent); margin-bottom:10px; min-height:20px;}
+  #timer-display{font-size:56px; font-weight:800; letter-spacing:1px; margin:6px 0 4px; font-variant-numeric:tabular-nums;}
+  #timer-round{font-size:12.5px; color:var(--muted); margin-bottom:18px;}
+  .timer-controls{display:flex; gap:10px; justify-content:center;}
+  .timer-controls button{
+    padding:12px 22px; border-radius:12px; border:none; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  #timer-start{background:var(--accent); color:#fff;}
+  #timer-reset{background:var(--card); color:var(--text); border:1px solid var(--line);}
+
+  ::-webkit-scrollbar{width:0;height:0;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== WELCOME ===================== -->
+  <div class="screen active" id="screen-welcome">
+    <div class="logo">ТІЗЕ 60+</div>
+    <div class="logo-sub">максимально щадящая программа для суставов</div>
+    <p>Программа укрепления коленных суставов для людей старше 60 лет. Все упражнения — с опорой, без риска, в своём темпе. Не требует специального инвентаря и не нагружает сердце.</p>
+    <div class="phases">
+      <div class="phase-row"><div class="phase-num">НЕДЕЛЯ 1</div><div class="phase-txt"><b>АДАПТАЦИЯ</b> — вспоминаем движения сидя и с опорой</div></div>
+      <div class="phase-row"><div class="phase-num">НЕДЕЛЯ 2</div><div class="phase-txt"><b>УКРЕПЛЕНИЕ</b> — уверенность в движениях, стульчик у стены</div></div>
+      <div class="phase-row"><div class="phase-num">НЕДЕЛЯ 3</div><div class="phase-txt"><b>ЗАКРЕПЛЕНИЕ</b> — пиковая для 60+ нагрузка</div></div>
+      <div class="phase-row"><div class="phase-num">НЕДЕЛЯ 4</div><div class="phase-txt"><b>РЕЗУЛЬТАТ</b> — финал и лёгкое восстановление</div></div>
+    </div>
+    <div class="warn-box">⚠️ Перед началом обязательная консультация с врачом. При любой боли — прекратить и отдохнуть 2 дня. Не торопиться — прогрессия только по самочувствию. Все упражнения стоя — только с опорой. Дышать ровно, не задерживая дыхание. Лучше 10 минут каждый день, чем час раз в неделю.</div>
+    <button id="start-btn">Начать программу →</button>
+  </div>
+
+  <!-- ===================== PROGRAM ===================== -->
+  <div class="screen" id="screen-program">
+    <div class="topbar" id="program-topbar">
+      <h1>Программа ТІЗЕ 60+</h1>
+      <button class="help-btn" id="help-btn" title="Как пользоваться">❓</button>
+    </div>
+    <div class="reminder-banner" id="reminder-banner" style="display:none;">
+      <span id="reminder-text"></span>
+      <button id="reminder-dismiss">✕</button>
+    </div>
+
+    <div class="today-card" id="today-card">
+      <div class="label">СЕГОДНЯ РЕКОМЕНДУЕТСЯ</div>
+      <div class="title" id="today-title"></div>
+      <div class="sub" id="today-sub"></div>
+      <button id="today-start-btn">Начать →</button>
+    </div>
+
+    <button class="plan-toggle" id="plan-toggle">Показать весь план ▾</button>
+
+    <div id="plan-full" style="display:none;">
+      <div class="week-tabs" id="week-tabs"></div>
+      <div class="week-label" id="week-label"></div>
+      <div class="day-grid" id="day-grid"></div>
+    </div>
+  </div>
+
+  <!-- ===================== DAY DETAIL ===================== -->
+  <div class="screen" id="screen-day">
+    <div class="topbar">
+      <button class="back-btn" id="day-back">←</button>
+      <h1>День <span id="day-header-num"></span></h1>
+    </div>
+    <div class="day-nav">
+      <button id="day-prev">‹ пред.</button>
+      <div class="day-title" id="day-title-block"></div>
+      <button id="day-next">след. ›</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="day-progress-fill"></div></div>
+      <div class="progress-label" id="day-progress-label"></div>
+    </div>
+    <div class="tip-box" id="day-tip"></div>
+    <div id="day-body"></div>
+    <div class="notes-box">
+      <div class="notes-label">📝 ЗАМЕТКА К ДНЮ</div>
+      <textarea id="day-notes" placeholder="Например: колено сегодня повело себя хорошо..."></textarea>
+    </div>
+  </div>
+
+  <!-- ===================== STATS ===================== -->
+  <div class="screen" id="screen-stats">
+    <div class="topbar"><h1>📈 Статистика</h1></div>
+    <div class="stats-wrap" id="stats-wrap"></div>
+  </div>
+
+  <!-- ===================== ABOUT EXERCISES ===================== -->
+  <div class="screen" id="screen-about">
+    <div class="topbar"><h1>Об упражнениях</h1></div>
+    <div class="about-list" id="about-list"></div>
+  </div>
+
+  <!-- ===================== PROTOCOL ===================== -->
+  <div class="screen" id="screen-protocol">
+    <div class="topbar"><h1>⚡ Протокол успеха</h1></div>
+    <div class="protocol-head">
+      <div class="warn">
+        <div class="big">Без этого программа работает на 50%</div>
+        <div class="small">Это не реклама — это часть методики.</div>
+      </div>
+    </div>
+
+    <div class="ritual-card" id="ritual-card">
+      <div class="ritual-title">Твой ритуал успеха</div>
+      <div class="ritual-sub">Выполни за 45 минут до тренировки, чтобы запустить восстановление связок</div>
+      <div class="ritual-icons">
+        <button class="ritual-icon-btn" data-key="collagen">🧴<span>Коллаген</span></button>
+        <button class="ritual-icon-btn" data-key="salt">🧂<span>Соль</span></button>
+        <button class="ritual-icon-btn" data-key="creatine">⚡<span>Креатин</span></button>
+      </div>
+      <div class="ritual-instruction">Смешай коллаген + соль + креатин в 500 мл воды и выпей</div>
+      <div class="ritual-checks" id="ritual-checks"></div>
+      <div class="ritual-timer" id="ritual-timer" style="display:none;">
+        <div class="ritual-timer-label">⏳ Осталось до тренировки</div>
+        <div class="ritual-timer-display" id="ritual-timer-display">45:00</div>
+        <button class="ritual-remind-btn" id="ritual-remind-btn">🔔 Напомнить, когда истечёт</button>
+      </div>
+      <div class="ritual-history" id="ritual-history"></div>
+    </div>
+
+    <div class="protocol-list" id="protocol-list"></div>
+    <div class="protocol-mix">
+      <h4>🥤 Как всыпать всё в один стакан</h4>
+      <p><b>За 45 минут до тренировки</b>, на пустой желудок — в 500 мл воды: коллаген (10-15 г) + морская соль (0.5-1 г) + креатин (5 г). Размешай и выпей — три компонента усиливают друг друга.</p>
+      <p><b>В дни отдыха:</b> только коллаген, утром натощак на 500 мл воды.</p>
+    </div>
+    <div class="protocol-disclaimer">⚠️ Программа ТІЗЕ 60+ не является медицинским лечением. Перед началом обязательна консультация с врачом.</div>
+  </div>
+
+  <!-- ===================== BOTTOM NAV ===================== -->
+  <div class="bottom-nav" id="bottom-nav" style="display:none;">
+    <button data-tab="program"><span class="ic">📅</span>Программа</button>
+    <button data-tab="about"><span class="ic">📖</span>Об упражнениях</button>
+    <button data-tab="stats"><span class="ic">📈</span>Статистика</button>
+    <button data-tab="protocol"><span class="ic">⚡</span>Протокол</button>
+  </div>
+
+  <!-- ===================== EXERCISE INFO MODAL ===================== -->
+  <div class="modal-overlay" id="info-modal">
+    <div class="modal-sheet">
+      <div class="close-row"><button onclick="closeModal('info-modal')">✕</button></div>
+      <h3 id="info-name"></h3>
+      <div class="label">ДЛЯ ЧЕГО</div>
+      <p id="info-purpose"></p>
+      <div class="label">КАК ВЫПОЛНЯТЬ</div>
+      <p id="info-howto"></p>
+      <div id="info-video"></div>
+    </div>
+  </div>
+
+  <!-- ===================== RITUAL INFO MODAL ===================== -->
+  <div class="modal-overlay" id="ritual-info-modal">
+    <div class="modal-sheet">
+      <div class="close-row"><button onclick="closeModal('ritual-info-modal')">✕</button></div>
+      <h3 id="ritual-info-name"></h3>
+      <p id="ritual-info-text"></p>
+    </div>
+  </div>
+
+  <!-- ===================== HELP MODAL ===================== -->
+  <div class="modal-overlay" id="help-modal">
+    <div class="modal-sheet">
+      <div class="close-row"><button onclick="closeModal('help-modal')">✕</button></div>
+      <h3>Как пользоваться приложением</h3>
+      <div class="label">ВЫПОЛНЕНИЕ</div>
+      <p>Отмечай упражнения галочкой слева от названия — прогресс дня сохраняется автоматически, даже без интернета.</p>
+      <div class="label">ДНИ ОТДЫХА</div>
+      <p>Дни отдыха отмечены пунктирной рамкой на карте программы — упражнений в них нет, только совет по прогулке и восстановлению.</p>
+      <div class="label">ТЕХНИКА И ВИДЕО</div>
+      <p>Нажми на название упражнения или кнопку «ⓘ Подробнее» — откроется описание техники и видео.</p>
+      <div class="label">ТАЙМЕР</div>
+      <p>Если у упражнения есть кнопка «⏱ Таймер» — она сама отсчитывает подходы и подсказывает звуком, когда менять фазу.</p>
+      <div class="label">ЗАМЕТКИ</div>
+      <p>Внизу каждого дня можно оставить заметку — например, как сегодня повело себя колено.</p>
+      <div class="label">СТАТИСТИКА</div>
+      <p>Показывает прогресс по неделям и карту всех дней программы — нажми на день в карте, чтобы сразу перейти к нему.</p>
+      <div class="label">ОФЛАЙН</div>
+      <p>После первого открытия приложение работает без интернета — кроме видео, для них нужна сеть.</p>
+      <div class="label">ГЛАВНЫЕ ПРАВИЛА 60+</div>
+      <p>Никакой боли — при боли остановиться и отдохнуть 2 дня. Не спешить — прогрессия только по самочувствию. Опора везде, где стоишь. Дышать ровно, не задерживая дыхание. Регулярность важнее интенсивности: лучше 10 минут каждый день, чем час раз в неделю.</p>
+    </div>
+  </div>
+
+  <!-- ===================== TIMER MODAL ===================== -->
+  <div class="modal-overlay" id="timer-modal">
+    <div class="modal-sheet">
+      <div class="close-row"><button onclick="closeTimer()">✕</button></div>
+      <div id="timer-name"></div>
+      <div id="timer-phase"></div>
+      <div id="timer-display">00:00</div>
+      <div id="timer-round"></div>
+      <div class="timer-controls">
+        <button id="timer-start" onclick="timerToggle()">Старт</button>
+        <button id="timer-reset" onclick="timerReset()">Сброс</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   DATA: exercise library (ТІЗЕ 60+)
+========================================================= */
+const EXERCISES = {
+  toeRaisesSeated:{name:"Подъёмы на пятки сидя", purpose:"Передняя большеберцовая мышца — работает без риска потери равновесия, полностью сидя.", howto:"Сидя на стуле, пятки на полу. Подними носки вверх, задержись на секунду и плавно опусти.", video:"https://youtu.be/migojWvtz8o"},
+  ankleCirclesSeated:{name:"Вращения стопы сидя", purpose:"Разминает голеностоп — база для стабильной работы стопы, без нагрузки на колено.", howto:"Сидя, приподними стопу и рисуй ею плавные круги в обе стороны, без рывков.", video:"https://youtu.be/6_XoswKQzmI"},
+  toeStretch:{name:"Растяжка большого пальца ноги", purpose:"Растягивает подошвенную фасцию — улучшает амортизацию стопы.", howto:"Сидя, мягко потяни большой палец стопы на себя рукой. Держи без боли, дыши ровно.", video:"https://www.youtube.com/watch?v=1IQhrDMzReg"},
+  kneeFlexExtSeated:{name:"Сгибание-разгибание колена сидя", purpose:"Разгоняет кровообращение вокруг коленного сустава без нагрузки веса тела.", howto:"Сидя на стуле, медленно полностью выпрямляй и сгибай колено, не отрывая бедро от сиденья. Движение плавное, без рывков.", video:"https://youtube.com/shorts/zTLS-CEcRQc"},
+  hipFlowSeated:{name:"ТБС Флоу сидя", purpose:"Мобилизация тазобедренного сустава сидя — безопасно снимает часть нагрузки с колена.", howto:"Сидя, вращай тазом внутрь, наружу и вперёд-назад — это один повтор. Двигайся мягко, без форсирования.", video:"https://www.youtube.com/shorts/DKLeA5ZUtNM"},
+  halfSquatChair:{name:"Полуприсед с опорой на стул", purpose:"Квадрицепс в самом безопасном варианте — с полной поддержкой рук.", howto:"Держась за спинку стула, слегка согни колени до комфортного угла и вернись в исходное положение.", video:"https://www.youtube.com/shorts/c7geslPiaZs"},
+  seatedHeelIso:{name:"Изометрика пяткой в пол (сидя)", purpose:"Включает заднюю поверхность бедра в изометрическом режиме — одно из самых безопасных и эффективных упражнений для укрепления связок колена без движения в суставе.", howto:"Сидя, нога прямая, пятка на полу. Напряги мышцы бедра и дави пяткой в пол, удерживая усилие заданное время, затем расслабься.", video:null},
+  hipRotation:{name:"Контролируемая артикуляционная ротация ТБС", purpose:"Снимает напряжение с тазобедренного сустава и поясницы, косвенно разгружает колено.", howto:"Медленно, сидя, выполняй круговые движения бедром в тазобедренном суставе.", video:"https://www.youtube.com/watch?v=yUPqLw3GsKc"},
+  singleLegStandSupported:{name:"Стойка на одной ноге (с опорой)", purpose:"Тренирует баланс и стабилизаторы колена в самом безопасном варианте — с обязательной опорой рукой.", howto:"Держась рукой за стену или спинку стула, просто стой на одной ноге, не раскачиваясь. Опору не убирай, пока не почувствуешь полную уверенность.", video:"https://youtube.com/shorts/uvhBsOGEfj4"},
+  hamstringStretchSeated:{name:"Задняя поверхность бедра (сидя)", purpose:"Мягкая растяжка задней поверхности бедра — безопасный вариант без нагрузки на поясницу и колени.", howto:"Сидя на краю стула, вытяни одну ногу вперёд. Мягко наклонись корпусом к ноге до лёгкого натяжения, не до боли, затем смени ногу.", video:null},
+  wallSit:{name:"Стульчик у стены", purpose:"Изометрическая выносливость квадрицепса без ударной нагрузки на сустав — для 60+ в очень коротком и мягком варианте.", howto:"Спиной к стене плавно опустись до комфортного угла — совсем неглубоко. Держи заданное время, дыши ровно, не до боли.", video:"https://youtube.com/shorts/_jhGkolhDPM"}
+};
+
+/* =========================================================
+   VIDEO: YouTube embed helpers
+========================================================= */
+function ytId(input){
+  if(!input) return null;
+  const m = input.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{6,})/);
+  if(m) return m[1];
+  if(/^[a-zA-Z0-9_-]{6,}$/.test(input)) return input;
+  return null;
+}
+function videoAreaHtml(video){
+  const id = ytId(video);
+  if(id){
+    return '<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/'+id+'" title="Видео" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+  }
+  return '<button class="video-btn" disabled>▶ Видео скоро появится</button>';
+}
+
+/* =========================================================
+   DATA: 28 days (4 weeks, incl. rest days)
+========================================================= */
+function ex(id, meta, timer){ return {id, meta, timer: timer||null}; }
+function restDay(title, tip, note){ return {title, tip, rest:true, restNote:note, exercises:[]}; }
+
+const DAYS = [
+/* ===== НЕДЕЛЯ 1 — АДАПТАЦИЯ ===== */
+{week:1, title:"День 1", tip:"Сегодня главное — вспомнить движения. Не торопись.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 15 повторений"),
+  ex("ankleCirclesSeated","1 подход × 15 повторений в каждую сторону"),
+  ex("toeStretch","30 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:30}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 20 повторений"),
+  ex("hipFlowSeated","1 подход × 10 повторений"),
+  ex("halfSquatChair","1 подход × 6 повторений"),
+  ex("seatedHeelIso","5 подходов × 10 сек", {rounds:5, phases:[{label:"Держи",sec:10}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений")
+]},
+{week:1, title:"День 2", tip:"Баланс тренируется маленькими шагами. 20 секунд — уже результат.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 15 повторений"),
+  ex("ankleCirclesSeated","1 подход × 15 повторений в каждую сторону"),
+  ex("toeStretch","30 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:30}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 20 повторений"),
+  ex("hipFlowSeated","1 подход × 10 повторений"),
+  ex("halfSquatChair","1 подход × 6 повторений"),
+  ex("singleLegStandSupported","2 подхода × 20 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:20}], rest:10}),
+  ex("hamstringStretchSeated","1 подход × 1 минуту на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:60}], rest:10})
+]},
+restDay("День 3 — Отдых", "Лёгкая прогулка 15-20 минут. Без быстрого шага.", "Лёгкая прогулка 15-20 минут. Без быстрого шага."),
+{week:1, title:"День 4", tip:"Прибавляем по чуть-чуть. Тело уже знает движения.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 15 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","30 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:30}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 25 повторений"),
+  ex("hipFlowSeated","1 подход × 12 повторений"),
+  ex("halfSquatChair","1 подход × 8 повторений"),
+  ex("seatedHeelIso","6 подходов × 10 сек", {rounds:6, phases:[{label:"Держи",sec:10}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений")
+]},
+{week:1, title:"День 5", tip:"Если тяжело — делай 2 подхода по 15 секунд. Это тоже прогресс.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 15 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","30 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:30}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 25 повторений"),
+  ex("hipFlowSeated","1 подход × 12 повторений"),
+  ex("halfSquatChair","1 подход × 8 повторений"),
+  ex("seatedHeelIso","6 подходов × 10 сек", {rounds:6, phases:[{label:"Держи",sec:10}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("singleLegStandSupported","2 подхода × 25 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:25}], rest:10}),
+  ex("hamstringStretchSeated","1 подход × 1.5 минуты на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:90}], rest:10})
+]},
+restDay("День 6 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+restDay("День 7 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+
+/* ===== НЕДЕЛЯ 2 — УКРЕПЛЕНИЕ ===== */
+{week:2, title:"День 1", tip:"Теперь движения должны быть чуть увереннее.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","35 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:35}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 30 повторений"),
+  ex("hipFlowSeated","1 подход × 15 повторений"),
+  ex("halfSquatChair","1 подход × 10 повторений"),
+  ex("seatedHeelIso","6 подходов × 12 сек", {rounds:6, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений")
+]},
+{week:2, title:"День 2", tip:"Баланс растёт постепенно — сравни с первой неделей.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","35 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:35}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 30 повторений"),
+  ex("hipFlowSeated","1 подход × 15 повторений"),
+  ex("halfSquatChair","1 подход × 10 повторений"),
+  ex("seatedHeelIso","6 подходов × 12 сек", {rounds:6, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("singleLegStandSupported","2 подхода × 30 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:30}], rest:10}),
+  ex("hamstringStretchSeated","1 подход × 1.5 минуты на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:90}], rest:10})
+]},
+restDay("День 3 — Отдых", "Прогулка.", "Прогулка."),
+{week:2, title:"День 4", tip:"Стульчик у стены — безопасный способ укрепить квадрицепс. Не до боли.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","35 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:35}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 35 повторений"),
+  ex("hipFlowSeated","1 подход × 15 повторений"),
+  ex("halfSquatChair","1 подход × 10 повторений"),
+  ex("seatedHeelIso","6 подходов × 12 сек", {rounds:6, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 15 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:15}], rest:30})
+]},
+{week:2, title:"День 5", tip:"Если чувствуешь уверенность — убери одну руку с опоры на 5 секунд.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 20 повторений в каждую сторону"),
+  ex("toeStretch","35 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:35}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 35 повторений"),
+  ex("hipFlowSeated","1 подход × 15 повторений"),
+  ex("halfSquatChair","1 подход × 10 повторений"),
+  ex("seatedHeelIso","6 подходов × 12 сек", {rounds:6, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 15 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:15}], rest:30}),
+  ex("singleLegStandSupported","2 подхода × 35 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:35}], rest:10})
+]},
+restDay("День 6 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+restDay("День 7 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+
+/* ===== НЕДЕЛЯ 3 — ЗАКРЕПЛЕНИЕ ===== */
+{week:3, title:"День 1", tip:"Третья неделя — пик. Ты уже готов к этому.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 25 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 40 повторений"),
+  ex("hipFlowSeated","1 подход × 20 повторений"),
+  ex("halfSquatChair","1 подход × 12 повторений"),
+  ex("seatedHeelIso","7 подходов × 12 сек", {rounds:7, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 20 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:20}], rest:30})
+]},
+{week:3, title:"День 2", tip:"Две минуты растяжки — чувствуешь, как гибче стало бедро?",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 25 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 40 повторений"),
+  ex("hipFlowSeated","1 подход × 20 повторений"),
+  ex("halfSquatChair","1 подход × 12 повторений"),
+  ex("seatedHeelIso","7 подходов × 12 сек", {rounds:7, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 20 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:20}], rest:30}),
+  ex("singleLegStandSupported","2 подхода × 40 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:40}], rest:10}),
+  ex("hamstringStretchSeated","1 подход × 2 минуты на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:120}], rest:10})
+]},
+restDay("День 3 — Отдых", "Прогулка.", "Прогулка."),
+{week:3, title:"День 4", tip:"Каждая неделя — чуть больше уверенности в движении.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 25 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 45 повторений"),
+  ex("hipFlowSeated","1 подход × 20 повторений"),
+  ex("halfSquatChair","1 подход × 12 повторений"),
+  ex("seatedHeelIso","7 подходов × 12 сек", {rounds:7, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 25 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:25}], rest:30})
+]},
+{week:3, title:"День 5", tip:"45 секунд на одной ноге — серьёзный результат для 60+.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 25 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 45 повторений"),
+  ex("hipFlowSeated","1 подход × 20 повторений"),
+  ex("halfSquatChair","1 подход × 12 повторений"),
+  ex("seatedHeelIso","7 подходов × 12 сек", {rounds:7, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 25 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:25}], rest:30}),
+  ex("singleLegStandSupported","2 подхода × 45 сек на каждую ногу, держась рукой", {rounds:2, phases:[{label:"Держи",sec:45}], rest:10})
+]},
+restDay("День 6 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+restDay("День 7 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+
+/* ===== НЕДЕЛЯ 4 — РЕЗУЛЬТАТ ===== */
+{week:4, title:"День 1", tip:"Стульчик 30 секунд — финальный уровень. Четыре недели назад это было 15 секунд.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 30 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 50 повторений"),
+  ex("hipFlowSeated","1 подход × 25 повторений"),
+  ex("halfSquatChair","1 подход × 15 повторений"),
+  ex("seatedHeelIso","8 подходов × 12 сек", {rounds:8, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 30 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:30}], rest:30})
+]},
+{week:4, title:"День 2", tip:"Минута на одной ноге с опорой — отличный результат для 60+.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 30 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 50 повторений"),
+  ex("hipFlowSeated","1 подход × 25 повторений"),
+  ex("halfSquatChair","1 подход × 15 повторений"),
+  ex("seatedHeelIso","8 подходов × 12 сек", {rounds:8, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 30 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:30}], rest:30}),
+  ex("singleLegStandSupported","2 подхода × 1 минуту на каждую ногу, с опорой одной рукой", {rounds:2, phases:[{label:"Держи",sec:60}], rest:10}),
+  ex("hamstringStretchSeated","1 подход × 2.5 минуты на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:150}], rest:10})
+]},
+restDay("День 3 — Отдых", "Прогулка.", "Прогулка."),
+{week:4, title:"День 4 — Финальная подвижность", tip:"Последний силовой день — сделай его с намерением.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 20 повторений"),
+  ex("ankleCirclesSeated","1 подход × 30 повторений в каждую сторону"),
+  ex("toeStretch","40 сек на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:40}], rest:5}),
+  ex("kneeFlexExtSeated","1 подход × 60 повторений"),
+  ex("hipFlowSeated","1 подход × 25 повторений"),
+  ex("halfSquatChair","1 подход × 15 повторений"),
+  ex("seatedHeelIso","8 подходов × 12 сек", {rounds:8, phases:[{label:"Держи",sec:12}], rest:5}),
+  ex("hipRotation","1 подход × 5 повторений"),
+  ex("wallSit","2 подхода × 30 сек, отдых 30 сек", {rounds:2, phases:[{label:"Держи",sec:30}], rest:30})
+]},
+{week:4, title:"🏆 День 5 — ФИНАЛ", tip:"🏆 Финальный день — лёгкость и благодарность своему телу.",
+ exercises:[
+  ex("toeRaisesSeated","1 подход × 15 повторений"),
+  ex("ankleCirclesSeated","1 подход × 30 повторений в каждую сторону"),
+  ex("kneeFlexExtSeated","1 подход × 30 повторений"),
+  ex("hipFlowSeated","1 подход × 15 повторений"),
+  ex("hamstringStretchSeated","1 подход × 2 минуты на каждую ногу", {rounds:2, phases:[{label:"Растяжка",sec:120}], rest:10})
+]},
+restDay("День 6 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию."),
+restDay("День 7 — Отдых", "Прогулка по самочувствию.", "Прогулка по самочувствию.")
+];
+
+const PROTOCOL = [
+  {title:"Коллаген — основа суставов", dose:"10-15 г в день, за 45 мин до тренировки", text:"Хрящ, связки и сухожилия на 70% состоят из коллагена — с возрастом и нагрузками его выработка снижается. Выбирай Коллаген Тип 2 с хондропротекторами (хондроитин + глюкозамин) и обязательно с витамином C — он усиливает усвоение в 2-3 раза."},
+  {title:"Морская соль — электролиты", dose:"0.5-1 г на 500 мл воды", text:"Натрий и микроэлементы поддерживают гидратацию суставной ткани и нервно-мышечную проводимость, снижая риск судорог при долгих статических удержаниях."},
+  {title:"Креатин — сила и восстановление", dose:"5 г в день, ежедневно", text:"Поддерживает силовые показатели в изометрических упражнениях и ускоряет восстановление мышц. Эффект накопительный — важна ежедневность, а не время приёма. Загрузочная фаза не нужна."},
+  {title:"Вода — основа всего", dose:"минимум 2 литра в день, помимо коктейля", text:"Хрящевая ткань на 70-80% состоит из воды. Без неё хрящ теряет упругость, суставная жидкость густеет, восстановление замедляется — это физиология, а не совет."},
+  {title:"Отдых и восстановление", dose:"часть тренировки, а не пауза между ними", text:"Результат приходит не во время тренировки, а во время отдыха. Тренировка даёт стимул, отдых даёт результат.",
+   subs:[
+    {label:"Сон", text:"Минимум 7-8 часов — именно во сне организм восстанавливает суставную ткань и синтезирует коллаген."},
+    {label:"Активный отдых", text:"В дни без тренировок — лёгкая прогулка 15-20 минут, разгоняет кровь к суставам. Не лежи весь день — двигайся легко."},
+    {label:"Холод после тренировки", text:"Холодная вода на колено 2-3 минуты или лёд через полотенце 10-15 минут — снижает воспаление и отёк. Лёд никогда не клади прямо на кожу."},
+    {label:"Тепло на следующий день", text:"Тёплая грелка или душ на область колена 10-15 минут — улучшает кровоток и ускоряет восстановление тканей."},
+    {label:"Слушай тело", text:"Дискомфорт при выполнении — норма, это работа. Острая боль во время или после — стоп, отдых 2 дня. При необходимости обратись к врачу."}
+   ]}
+];
+
+/* =========================================================
+   STATE
+========================================================= */
+const STORAGE_KEY = "tize60_progress_v1";
+let state = loadState();
+let currentDayIdx = state.currentDay || 0;
+let currentWeek = DAYS[currentDayIdx] ? DAYS[currentDayIdx].week : 1;
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {started:false, currentDay:0, checks:{}, notes:{}, completedAt:{}, reminderDismissedDate:null, protocol:{date:null,collagen:false,salt:false,creatine:false,startedAt:null}, protocolLog:[]};
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+if(!state.notes) state.notes = {};
+if(!state.completedAt) state.completedAt = {};
+if(state.reminderDismissedDate === undefined) state.reminderDismissedDate = null;
+if(!state.protocol) state.protocol = {date:null, collagen:false, salt:false, creatine:false, startedAt:null};
+if(!state.protocolLog) state.protocolLog = [];
+
+function isChecked(dayIdx, exIdx){
+  return !!(state.checks[dayIdx] && state.checks[dayIdx][exIdx]);
+}
+function toggleCheck(dayIdx, exIdx){
+  if(!state.checks[dayIdx]) state.checks[dayIdx] = {};
+  state.checks[dayIdx][exIdx] = !state.checks[dayIdx][exIdx];
+  const c = dayCompletion(dayIdx);
+  if(c.done === c.total && !state.completedAt[dayIdx]){
+    state.completedAt[dayIdx] = Date.now();
+  }
+  saveState();
+}
+function dayCompletion(dayIdx){
+  const total = DAYS[dayIdx].exercises.length;
+  const done = state.checks[dayIdx] ? Object.values(state.checks[dayIdx]).filter(Boolean).length : 0;
+  return {done, total};
+}
+function getNote(dayIdx){
+  return state.notes[dayIdx] || "";
+}
+function setNote(dayIdx, text){
+  state.notes[dayIdx] = text;
+  saveState();
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function setTab(tab){
+  document.querySelectorAll(".bottom-nav button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab===tab);
+  });
+}
+
+document.getElementById("start-btn").addEventListener("click", ()=>{
+  state.started = true;
+  saveState();
+  document.getElementById("bottom-nav").style.display = "flex";
+  renderProgram();
+  showScreen("screen-program");
+  setTab("program");
+});
+
+document.querySelectorAll(".bottom-nav button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const tab = btn.dataset.tab;
+    setTab(tab);
+    if(tab==="program"){ renderProgram(); showScreen("screen-program"); }
+    if(tab==="about"){ renderAbout(); showScreen("screen-about"); }
+    if(tab==="stats"){ renderStats(); showScreen("screen-stats"); }
+    if(tab==="protocol"){ renderProtocol(); showScreen("screen-protocol"); }
+  });
+});
+
+document.getElementById("help-btn").addEventListener("click", ()=>{
+  document.getElementById("help-modal").classList.add("active");
+});
+document.getElementById("reminder-dismiss").addEventListener("click", ()=>{
+  state.reminderDismissedDate = new Date().toDateString();
+  saveState();
+  document.getElementById("reminder-banner").style.display = "none";
+});
+
+document.getElementById("day-back").addEventListener("click", ()=>{
+  renderProgram();
+  showScreen("screen-program");
+  setTab("program");
+});
+document.getElementById("day-prev").addEventListener("click", ()=>{
+  if(currentDayIdx>0){ currentDayIdx--; renderDay(currentDayIdx); }
+});
+document.getElementById("day-next").addEventListener("click", ()=>{
+  if(currentDayIdx<DAYS.length-1){ currentDayIdx++; renderDay(currentDayIdx); }
+});
+
+document.getElementById("plan-toggle").addEventListener("click", ()=>{
+  const el = document.getElementById("plan-full");
+  const btn = document.getElementById("plan-toggle");
+  const showing = el.style.display !== "none";
+  el.style.display = showing ? "none" : "block";
+  btn.textContent = showing ? "Показать весь план ▾" : "Скрыть весь план ▴";
+});
+
+/* =========================================================
+   RENDER: Reminder banner + Today card
+========================================================= */
+function checkReminder(){
+  const banner = document.getElementById("reminder-banner");
+  const todayStr = new Date().toDateString();
+  const trainedToday = Object.values(state.completedAt).some(ts => new Date(ts).toDateString() === todayStr);
+  if(trainedToday || state.reminderDismissedDate === todayStr){
+    banner.style.display = "none";
+    return;
+  }
+  document.getElementById("reminder-text").textContent = "Не забудь потренироваться сегодня 💪";
+  banner.style.display = "flex";
+}
+
+function isDayDone(idx){
+  const c = dayCompletion(idx);
+  return c.total ? (c.done===c.total) : true;
+}
+function getRecommendedDayIdx(){
+  for(let i=0;i<DAYS.length;i++){ if(!isDayDone(i)) return i; }
+  return DAYS.length-1;
+}
+function renderTodayCard(){
+  const recIdx = getRecommendedDayIdx();
+  const allComplete = DAYS.every((d,i)=>isDayDone(i));
+  const d = DAYS[recIdx];
+  const label = d.rest ? "Отдых" : d.title.replace(/^День \d+\s*—?\s*/,'').replace(/^🏆\s*/,'');
+  if(allComplete){
+    document.getElementById("today-title").textContent = "🏆 Программа пройдена полностью!";
+    document.getElementById("today-sub").textContent = "Можешь пересмотреть любой день или начать сначала для поддержания формы.";
+  } else {
+    document.getElementById("today-title").textContent = "День " + (recIdx+1) + (d.rest ? " — Отдых" : (label ? " — " + label : ""));
+    document.getElementById("today-sub").textContent = "Неделя " + d.week + " · День " + (recIdx+1) + " из " + DAYS.length;
+  }
+  document.getElementById("today-start-btn").onclick = ()=>{
+    currentDayIdx = recIdx;
+    currentWeek = d.week;
+    state.currentDay = recIdx;
+    saveState();
+    renderDay(recIdx);
+    showScreen("screen-day");
+  };
+}
+
+/* =========================================================
+   RENDER: Program (week tabs + day grid)
+========================================================= */
+function renderProgram(){
+  checkReminder();
+  renderTodayCard();
+  const tabsEl = document.getElementById("week-tabs");
+  tabsEl.innerHTML = "";
+  [1,2,3,4].forEach(w=>{
+    const b = document.createElement("div");
+    b.className = "week-tab" + (w===currentWeek ? " active" : "");
+    b.textContent = "Неделя " + w;
+    b.addEventListener("click", ()=>{ currentWeek = w; renderProgram(); });
+    tabsEl.appendChild(b);
+  });
+
+  const labels = {1:"АДАПТАЦИЯ", 2:"УКРЕПЛЕНИЕ", 3:"ЗАКРЕПЛЕНИЕ", 4:"РЕЗУЛЬТАТ"};
+  document.getElementById("week-label").textContent = "Неделя " + currentWeek + " — " + labels[currentWeek];
+
+  const grid = document.getElementById("day-grid");
+  grid.innerHTML = "";
+  DAYS.forEach((d, idx)=>{
+    if(d.week !== currentWeek) return;
+    const isDone = isDayDone(idx);
+    const cell = document.createElement("div");
+    cell.className = "day-cell" + (isDone ? " done" : "") + (d.rest ? " rest" : "") + (idx===currentDayIdx ? " current" : "");
+    const noteMark = (state.notes[idx] && state.notes[idx].trim()) ? '<span style="position:absolute;top:4px;left:6px;font-size:10px;">📝</span>' : '';
+    const label = d.rest ? "Отдых" : d.title.replace(/^День \d+\s*—?\s*/,'').replace(/^🏆\s*/,'');
+    cell.innerHTML = noteMark+'<div class="n">'+(idx+1)+'</div><div class="t">'+(label||d.title)+'</div>';
+    cell.addEventListener("click", ()=>{
+      currentDayIdx = idx;
+      state.currentDay = idx;
+      saveState();
+      renderDay(idx);
+      showScreen("screen-day");
+    });
+    grid.appendChild(cell);
+  });
+}
+
+/* =========================================================
+   RENDER: Day detail
+========================================================= */
+function renderDay(idx){
+  const d = DAYS[idx];
+  document.getElementById("day-header-num").textContent = idx+1;
+  document.getElementById("day-title-block").innerHTML =
+    d.title + "<small>Неделя " + d.week + " · День " + (idx+1) + " из " + DAYS.length + "</small>";
+  document.getElementById("day-prev").disabled = idx===0;
+  document.getElementById("day-next").disabled = idx===DAYS.length-1;
+  document.getElementById("day-tip").innerHTML = "💡 " + d.tip.replace(/^💡\s*/,'').replace(/^🏆\s*/,'');
+
+  const {done, total} = dayCompletion(idx);
+  document.getElementById("day-progress-fill").style.width = (total? (done/total*100) : 100) + "%";
+  document.getElementById("day-progress-label").textContent = total ? (done + " / " + total + " выполнено") : "День отдыха — упражнений нет";
+
+  const body = document.getElementById("day-body");
+  body.innerHTML = "";
+
+  if(d.rest){
+    const restCard = document.createElement("div");
+    restCard.className = "rest-card";
+    restCard.innerHTML = '<div class="rest-ic">🚶</div><div class="rest-title">День отдыха</div><div class="rest-note">'+d.restNote+'</div>';
+    body.appendChild(restCard);
+  } else {
+    const list = document.createElement("div");
+    list.className = "ex-list";
+    d.exercises.forEach((item, exIdx)=>{
+      const info = EXERCISES[item.id];
+      const checked = isChecked(idx, exIdx);
+      const row = document.createElement("div");
+      row.className = "ex-row" + (checked ? " checked" : "");
+
+      const check = document.createElement("div");
+      check.className = "ex-check";
+      check.textContent = checked ? "✓" : "";
+      check.addEventListener("click", ()=>{
+        toggleCheck(idx, exIdx);
+        renderDay(idx);
+      });
+
+      const exBody = document.createElement("div");
+      exBody.className = "ex-body";
+      const name = document.createElement("div");
+      name.className = "ex-name";
+      name.textContent = info.name;
+      name.addEventListener("click", ()=> openInfo(item.id));
+      const meta = document.createElement("div");
+      meta.className = "ex-meta";
+      meta.textContent = item.meta;
+
+      const actions = document.createElement("div");
+      actions.className = "ex-actions";
+      const infoBtn = document.createElement("button");
+      infoBtn.textContent = "ⓘ Подробнее";
+      infoBtn.addEventListener("click", ()=> openInfo(item.id));
+      actions.appendChild(infoBtn);
+      if(item.timer){
+        const timerBtn = document.createElement("button");
+        timerBtn.className = "timer-btn";
+        timerBtn.textContent = "⏱ Таймер";
+        timerBtn.addEventListener("click", ()=> openTimer(info.name, item.timer));
+        actions.appendChild(timerBtn);
+      }
+
+      exBody.appendChild(name);
+      exBody.appendChild(meta);
+      exBody.appendChild(actions);
+      row.appendChild(check);
+      row.appendChild(exBody);
+      list.appendChild(row);
+    });
+    body.appendChild(list);
+  }
+
+  const notesEl = document.getElementById("day-notes");
+  notesEl.value = getNote(idx);
+  notesEl.oninput = ()=>{ setNote(idx, notesEl.value); };
+}
+
+/* =========================================================
+   RENDER: About screen
+========================================================= */
+function renderAbout(){
+  const list = document.getElementById("about-list");
+  list.innerHTML = "";
+  Object.keys(EXERCISES).forEach(id=>{
+    const info = EXERCISES[id];
+    const card = document.createElement("div");
+    card.className = "about-card";
+    card.innerHTML =
+      '<h3>'+info.name+'</h3>'+
+      '<div class="label">ДЛЯ ЧЕГО</div><p>'+info.purpose+'</p>'+
+      '<div class="label">КАК ВЫПОЛНЯТЬ</div><p>'+info.howto+'</p>'+
+      videoAreaHtml(info.video);
+    list.appendChild(card);
+  });
+}
+
+/* =========================================================
+   RENDER: Stats screen
+========================================================= */
+function renderStats(){
+  const wrap = document.getElementById("stats-wrap");
+  const totalDays = DAYS.length;
+  let daysDone = 0, exercisesDone = 0;
+
+  const weekAgg = {1:{done:0,total:0}, 2:{done:0,total:0}, 3:{done:0,total:0}, 4:{done:0,total:0}};
+  DAYS.forEach((d, idx)=>{
+    const c = dayCompletion(idx);
+    exercisesDone += c.done;
+    if(isDayDone(idx)) daysDone++;
+    weekAgg[d.week].done += c.done;
+    weekAgg[d.week].total += c.total;
+  });
+
+  const now = Date.now();
+  const last7 = Object.values(state.completedAt).filter(ts => now-ts < 7*24*60*60*1000).length;
+  const notesCount = Object.keys(state.notes).filter(k=>state.notes[k] && state.notes[k].trim()).length;
+
+  let html = '';
+  html += '<div class="stat-row">'
+    + '<div class="stat-card"><div class="stat-num">'+daysDone+'/'+totalDays+'</div><div class="stat-label">дней завершено (вкл. отдых)</div></div>'
+    + '<div class="stat-card"><div class="stat-num">'+exercisesDone+'</div><div class="stat-label">упражнений отмечено</div></div>'
+    + '</div>';
+  html += '<div class="stat-row">'
+    + '<div class="stat-card"><div class="stat-num">'+last7+'</div><div class="stat-label">дней завершено за 7 дней</div></div>'
+    + '<div class="stat-card"><div class="stat-num">'+notesCount+'</div><div class="stat-label">заметок оставлено</div></div>'
+    + '</div>';
+
+  html += '<div class="stat-weeks">';
+  [1,2,3,4].forEach(w=>{
+    const pct = weekAgg[w].total ? Math.round(weekAgg[w].done/weekAgg[w].total*100) : 100;
+    html += '<div class="stat-week-row"><div class="stat-week-label">Неделя '+w+'</div><div class="progress-bar-bg" style="flex:1;"><div class="progress-bar-fill" style="width:'+pct+'%"></div></div><div class="stat-week-pct">'+pct+'%</div></div>';
+  });
+  html += '</div>';
+
+  html += '<div class="stat-heatmap-label">Карта прогресса — нажми на день, чтобы перейти к нему</div>';
+  html += '<div class="day-grid" id="stats-heatmap"></div>';
+
+  wrap.innerHTML = html;
+
+  const grid = document.getElementById("stats-heatmap");
+  DAYS.forEach((d, idx)=>{
+    const c = dayCompletion(idx);
+    const done = isDayDone(idx);
+    const cell = document.createElement("div");
+    cell.className = "day-cell" + (done ? " done" : "") + (d.rest ? " rest" : "");
+    if(c.total && c.done>0 && c.done<c.total) cell.style.opacity = (0.4 + 0.5*(c.done/c.total)).toFixed(2);
+    else if(c.total && c.done===0) cell.style.opacity = "0.35";
+    cell.innerHTML = '<div class="n">'+(idx+1)+'</div><div class="t">Нед. '+d.week+'</div>';
+    cell.addEventListener("click", ()=>{
+      currentDayIdx = idx;
+      currentWeek = d.week;
+      state.currentDay = idx;
+      saveState();
+      renderDay(idx);
+      showScreen("screen-day");
+    });
+    grid.appendChild(cell);
+  });
+}
+
+/* =========================================================
+   RENDER: Ritual + Protocol screen
+========================================================= */
+const RITUAL_INFO = {
+  collagen:{name:"Коллаген", text:"Строительный материал для связок и сухожилий — восполняет дефицит именно в момент нагрузки на сустав. Прими за 45 минут до тренировки, желательно вместе с витамином C для лучшего усвоения."},
+  salt:{name:"Морская соль", text:"Электролиты поддерживают гидратацию суставной ткани и нервно-мышечную проводимость, снижая риск судорог при статических удержаниях."},
+  creatine:{name:"Креатин", text:"Поддерживает силу в изометрических упражнениях и ускоряет восстановление мышц. Эффект накопительный — важна ежедневность, а не точное время приёма."}
+};
+
+let ritualInterval = null;
+const RITUAL_DURATION_MS = 45*60*1000;
+
+function ensureProtocolState(){
+  const today = new Date().toDateString();
+  if(state.protocol.date !== today){
+    state.protocol = {date:today, collagen:false, salt:false, creatine:false, startedAt:null};
+    saveState();
+  }
+}
+
+function renderRitual(){
+  ensureProtocolState();
+  const p = state.protocol;
+
+  const checksEl = document.getElementById("ritual-checks");
+  const items = [
+    {key:"collagen", label:"Коллаген выпит"},
+    {key:"salt", label:"Соль добавлена"},
+    {key:"creatine", label:"Креатин принят"}
+  ];
+  checksEl.innerHTML = "";
+  items.forEach(it=>{
+    const row = document.createElement("div");
+    row.className = "ritual-check-row" + (p[it.key] ? " checked" : "");
+    row.innerHTML = '<span class="ritual-check-box">'+(p[it.key]?"✓":"")+'</span><span>'+it.label+'</span>';
+    row.addEventListener("click", ()=>{
+      p[it.key] = !p[it.key];
+      if(p.collagen && p.salt && p.creatine){
+        if(!p.startedAt){
+          p.startedAt = Date.now();
+          state.protocolLog.push(p.startedAt);
+        }
+      } else {
+        p.startedAt = null;
+      }
+      saveState();
+      renderRitual();
+    });
+    checksEl.appendChild(row);
+  });
+
+  const timerBox = document.getElementById("ritual-timer");
+  clearInterval(ritualInterval);
+  if(p.startedAt){
+    timerBox.style.display = "block";
+    updateRitualCountdown();
+    ritualInterval = setInterval(updateRitualCountdown, 1000);
+  } else {
+    timerBox.style.display = "none";
+  }
+
+  const now = Date.now();
+  const weekCount = state.protocolLog.filter(ts => now-ts < 7*24*60*60*1000).length;
+  document.getElementById("ritual-history").textContent = "Выполнено ритуалов за 7 дней: " + weekCount;
+}
+
+function updateRitualCountdown(){
+  const p = state.protocol;
+  const remaining = RITUAL_DURATION_MS - (Date.now() - p.startedAt);
+  const disp = document.getElementById("ritual-timer-display");
+  if(remaining <= 0){
+    disp.textContent = "Можно тренироваться! 💪";
+    clearInterval(ritualInterval);
+    return;
+  }
+  const totalSec = Math.floor(remaining/1000);
+  const m = Math.floor(totalSec/60);
+  const s = totalSec%60;
+  disp.textContent = (m<10?"0":"")+m + ":" + (s<10?"0":"")+s;
+}
+
+document.querySelectorAll(".ritual-icon-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const info = RITUAL_INFO[btn.dataset.key];
+    document.getElementById("ritual-info-name").textContent = info.name;
+    document.getElementById("ritual-info-text").textContent = info.text;
+    document.getElementById("ritual-info-modal").classList.add("active");
+  });
+});
+
+document.getElementById("ritual-remind-btn").addEventListener("click", ()=>{
+  const btn = document.getElementById("ritual-remind-btn");
+  const p = state.protocol;
+  if(!p.startedAt) return;
+  const remaining = RITUAL_DURATION_MS - (Date.now() - p.startedAt);
+  if(remaining <= 0) return;
+  const scheduleAlert = ()=>{
+    btn.disabled = true;
+    btn.textContent = "🔔 Напоминание запланировано";
+    setTimeout(()=>{
+      try{
+        if("Notification" in window && Notification.permission==="granted"){
+          new Notification("ТІЗЕ 60+", {body:"Протокол усвоен — можно тренироваться! 💪"});
+        }
+      }catch(e){}
+      beep(880,0.15);
+      setTimeout(()=>beep(1046,0.2), 180);
+    }, remaining);
+  };
+  if("Notification" in window && Notification.permission !== "granted"){
+    Notification.requestPermission().then(()=> scheduleAlert());
+  } else {
+    scheduleAlert();
+  }
+});
+
+function renderProtocol(){
+  renderRitual();
+  const list = document.getElementById("protocol-list");
+  list.innerHTML = "";
+  PROTOCOL.forEach((p, i)=>{
+    const item = document.createElement("div");
+    item.className = "protocol-item";
+    let subsHtml = "";
+    if(p.subs){
+      subsHtml = '<div class="sub-list">' + p.subs.map(s=>
+        '<div><div class="sub-title">'+s.label+'</div><p>'+s.text+'</p></div>'
+      ).join("") + '</div>';
+    }
+    item.innerHTML =
+      '<div class="protocol-num">'+(i+1)+'</div>'+
+      '<div><h4>'+p.title+'</h4><div class="dose">'+p.dose+'</div><p>'+p.text+'</p>'+subsHtml+'</div>';
+    list.appendChild(item);
+  });
+}
+
+/* =========================================================
+   MODAL: exercise info
+========================================================= */
+function openInfo(id){
+  const info = EXERCISES[id];
+  document.getElementById("info-name").textContent = info.name;
+  document.getElementById("info-purpose").textContent = info.purpose;
+  document.getElementById("info-howto").textContent = info.howto;
+  document.getElementById("info-video").innerHTML = videoAreaHtml(info.video);
+  document.getElementById("info-modal").classList.add("active");
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove("active");
+}
+
+/* =========================================================
+   TIMER
+========================================================= */
+let timerState = null;
+let audioCtx = null;
+
+function beep(freq, dur){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + dur);
+  }catch(e){}
+}
+
+function openTimer(name, cfg){
+  clearTimerInterval();
+  timerState = {
+    name,
+    rounds: cfg.rounds,
+    phases: cfg.phases,
+    rest: cfg.rest || 0,
+    round: 1,
+    phaseIdx: 0,
+    mode: "phase",
+    remaining: cfg.phases[0].sec,
+    running: false,
+    intervalId: null
+  };
+  document.getElementById("timer-name").textContent = name;
+  updateTimerUI();
+  document.getElementById("timer-start").textContent = "Старт";
+  document.getElementById("timer-modal").classList.add("active");
+}
+function closeTimer(){
+  clearTimerInterval();
+  document.getElementById("timer-modal").classList.remove("active");
+}
+function clearTimerInterval(){
+  if(timerState && timerState.intervalId){
+    clearInterval(timerState.intervalId);
+    timerState.intervalId = null;
+  }
+  if(timerState) timerState.running = false;
+}
+function fmt(sec){
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return (m<10?"0":"")+m + ":" + (s<10?"0":"")+s;
+}
+function updateTimerUI(){
+  const t = timerState;
+  if(!t) return;
+  const currentPhaseLabel = t.mode==="rest" ? "Отдых" : t.phases[t.phaseIdx].label;
+  document.getElementById("timer-phase").textContent = currentPhaseLabel;
+  document.getElementById("timer-display").textContent = fmt(t.remaining);
+  document.getElementById("timer-round").textContent = "Круг " + t.round + " из " + t.rounds;
+}
+function timerToggle(){
+  if(!timerState) return;
+  if(timerState.running){
+    clearTimerInterval();
+    document.getElementById("timer-start").textContent = "Продолжить";
+  } else {
+    timerState.running = true;
+    document.getElementById("timer-start").textContent = "Пауза";
+    timerState.intervalId = setInterval(timerTick, 1000);
+  }
+}
+function timerReset(){
+  if(!timerState) return;
+  clearTimerInterval();
+  timerState.round = 1;
+  timerState.phaseIdx = 0;
+  timerState.mode = "phase";
+  timerState.remaining = timerState.phases[0].sec;
+  document.getElementById("timer-start").textContent = "Старт";
+  updateTimerUI();
+}
+function timerTick(){
+  const t = timerState;
+  t.remaining--;
+  if(t.remaining <= 0){
+    beep(880, 0.18);
+    advanceTimer();
+    return;
+  }
+  if(t.remaining <= 3) beep(660, 0.08);
+  updateTimerUI();
+}
+function advanceTimer(){
+  const t = timerState;
+  if(t.mode === "phase"){
+    if(t.phaseIdx < t.phases.length-1){
+      t.phaseIdx++;
+      t.remaining = t.phases[t.phaseIdx].sec;
+      beep(520, 0.1);
+      updateTimerUI();
+      return;
+    }
+    if(t.round < t.rounds && t.rest > 0){
+      t.mode = "rest";
+      t.remaining = t.rest;
+      beep(380, 0.1);
+      updateTimerUI();
+      return;
+    }
+    if(t.round < t.rounds){
+      t.round++;
+      t.phaseIdx = 0;
+      t.remaining = t.phases[0].sec;
+      beep(520, 0.1);
+      updateTimerUI();
+      return;
+    }
+    finishTimer();
+    return;
+  } else {
+    t.round++;
+    t.mode = "phase";
+    t.phaseIdx = 0;
+    t.remaining = t.phases[0].sec;
+    beep(520, 0.1);
+    updateTimerUI();
+  }
+}
+function finishTimer(){
+  clearTimerInterval();
+  beep(880,0.15);
+  setTimeout(()=>beep(1046,0.2), 180);
+  document.getElementById("timer-phase").textContent = "Готово! 🎉";
+  document.getElementById("timer-display").textContent = "00:00";
+  document.getElementById("timer-start").textContent = "Старт";
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+(function init(){
+  if(state.started){
+    document.getElementById("bottom-nav").style.display = "flex";
+    renderProgram();
+    showScreen("screen-program");
+    setTab("program");
+  }
+})();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

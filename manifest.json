@@ -1,0 +1,14 @@
+{
+  "name": "ТІЗЕ 60+ — программа для колена",
+  "short_name": "ТІЗЕ 60+",
+  "description": "4-недельная щадящая программа укрепления коленных суставов для людей старше 60 лет",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0e10",
+  "theme_color": "#0e0e10",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
