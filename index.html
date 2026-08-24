@@ -344,6 +344,14 @@
   .modal-sheet .label{font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.4px; margin:12px 0 3px;}
   .modal-sheet .label:first-of-type{margin-top:0;}
   .modal-sheet p{margin:0; font-size:13.5px; line-height:1.55; color:#d5d2ce;}
+  .protocol-intro-btn{
+    margin-top:16px; width:100%; padding:14px; border-radius:12px; border:none;
+    background:var(--accent); color:#fff; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .protocol-intro-skip{
+    margin-top:10px; width:100%; padding:8px; border:none; background:none;
+    color:var(--muted); font-size:12.5px; cursor:pointer;
+  }
 
   /* timer modal */
   #timer-modal .modal-sheet{text-align:center;}
@@ -527,6 +535,17 @@
       <div class="close-row"><button onclick="closeModal('ritual-info-modal')">✕</button></div>
       <h3 id="ritual-info-name"></h3>
       <p id="ritual-info-text"></p>
+    </div>
+  </div>
+
+  <!-- ===================== PROTOCOL INTRO MODAL ===================== -->
+  <div class="modal-overlay" id="protocol-intro-modal">
+    <div class="modal-sheet">
+      <div class="close-row"><button onclick="closeModal('protocol-intro-modal')">✕</button></div>
+      <h3>⚡ Прежде чем начать</h3>
+      <p>Коллаген — основной строительный материал для твоих связок и сухожилий. Без «Протокола успеха» результат придёт заметно медленнее — почитай его, это займёт минуту.</p>
+      <button class="protocol-intro-btn" id="protocol-intro-open-btn">Открыть протокол →</button>
+      <button class="protocol-intro-skip" id="protocol-intro-skip-btn">Позже, сразу к упражнениям</button>
     </div>
   </div>
 
@@ -912,6 +931,19 @@ document.getElementById("start-btn").addEventListener("click", ()=>{
   renderProgram();
   showScreen("screen-program");
   setTab("program");
+});
+
+document.getElementById("protocol-intro-open-btn").addEventListener("click", ()=>{
+  closeModal("protocol-intro-modal");
+  state.started = true;
+  saveState();
+  document.getElementById("bottom-nav").style.display = "flex";
+  renderProtocol();
+  showScreen("screen-protocol");
+  setTab("protocol");
+});
+document.getElementById("protocol-intro-skip-btn").addEventListener("click", ()=>{
+  closeModal("protocol-intro-modal");
 });
 
 document.querySelectorAll(".bottom-nav button").forEach(btn=>{
@@ -1572,6 +1604,7 @@ const ACCESS_CODES = {
   // Добавляй сюда новые коды при продаже: "КОД": "Имя покупателя"
 };
 const ACCESS_KEY = "tize60_access_v1";
+const PROTOCOL_INTRO_KEY = "tize60_protocol_intro_seen";
 
 function unlockApp(name){
   document.querySelectorAll(".buyer-watermark").forEach(el=> el.textContent = "👤 "+name);
@@ -1596,6 +1629,10 @@ document.getElementById("gate-submit").addEventListener("click", ()=>{
     localStorage.setItem(ACCESS_KEY, JSON.stringify({code:raw, name}));
     errEl.style.display = "none";
     unlockApp(name);
+    if(!localStorage.getItem(PROTOCOL_INTRO_KEY)){
+      localStorage.setItem(PROTOCOL_INTRO_KEY, "1");
+      document.getElementById("protocol-intro-modal").classList.add("active");
+    }
   } else {
     errEl.style.display = "block";
   }
